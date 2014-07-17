@@ -72,9 +72,18 @@ not_found do
   # on the dev machine.
 
   status 200
-  content_type :html
-  spa_path = File.expand_path('../../client/app.html', __FILE__)
-  File.new(spa_path)
+
+  path = File.expand_path("../../client#{env['PATH_INFO']}", __FILE__)
+  if File.file?(path)
+    # Hacky hacky! This code would never be part of real
+    # app since it'd be handled by Nginx in Vagrant.
+    # I know it's terrible.
+    content_type path.split('.').last
+    File.new(path)
+  else
+    content_type :html
+    File.new(File.expand_path('../../client/app.html', __FILE__))
+  end
 end
 
 run Sinatra::Application
