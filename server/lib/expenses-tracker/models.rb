@@ -4,9 +4,27 @@ require 'ohm/validations'
 require 'bcrypt'
 
 module ExpensesTracker
+  module ErrorAsJSON
+    def to_json
+      {message: self.message}.to_json
+    end
+  end
+
   class InvalidObject < StandardError
+    include ErrorAsJSON
+
+
     def initialize(errors)
-      super("Object is invalid: #{errors.inspect}")
+      super("Object is invalid: #{errors.inspect}.")
+    end
+  end
+
+  class UndefinedAttribute < StandardError
+    include ErrorAsJSON
+
+    def initialize(error)
+      match = error.message.match(/undefined method `(.+)='/)
+      super("Attribute '#{match[1]}' doesn't exist.")
     end
   end
 
@@ -48,8 +66,15 @@ module ExpensesTracker
     end
 
     # TODO: Extract this when I'll have more model classes.
+    def initialize(*args)
+      super(*args)
+    rescue Exception => error
+      # C'mon guys, how about providing a special error class?
+      raise UndefinedAttribute.new(error)
+    end
+
     def self.create!(*args)
-      self.new(*args).save!
+      self.new(*args).tap(&:save!)
     end
 
     def save!

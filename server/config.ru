@@ -16,11 +16,14 @@ require_relative './lib/expenses-tracker/models'
 # Normally you'd want to have some email confirmation,
 # but it's not part of the spec and I feel lazy :)
 post '/api/users' do
-  data = JSON.parse(env['rack.input'].read)
-  if user = ExpensesTracker::User.create(data)
+  content_type :json
+
+  begin
+    data = JSON.parse(env['rack.input'].read)
+    user = ExpensesTracker::User.create!(data)
     status 201; user.to_json
-  else
-    status 400; user.errors.to_json
+  rescue ExpensesTracker::InvalidObject, ExpensesTracker::UndefinedAttribute, JSON::ParserError => error
+    status 400; {message: error.message}.to_json
   end
 end
 
@@ -53,6 +56,7 @@ not_found do
   # on the dev machine.
 
   status 200
+  content_type :html
   spa_path = File.expand_path('../../client/app.html', __FILE__)
   File.new(spa_path)
 end
