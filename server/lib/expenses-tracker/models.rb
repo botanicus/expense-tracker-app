@@ -64,5 +64,9 @@ module ExpensesTracker
         BCrypt::Engine.hash_secret(self.password, self.salt)
       end
     end
+
+    def to_json
+      {username: self.username}.to_json
+    end
   end
 end
