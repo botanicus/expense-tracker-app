@@ -3,7 +3,9 @@ source 'https://rubygems.org'
 gem 'sinatra'
 gem 'warden'
 gem 'jwt'
+
 gem 'ohm'
+gem 'ohm-validations'
 gem 'bcrypt'
 
 gem 'pry', groups: [:development, :test]

@@ -8,14 +8,21 @@ describe ExpensesTracker::User do
   end
 
   it 'is not possible to save multiple users under the same username' do
-    described_class.create(username: 'botanicus')
+    described_class.create!(username: 'botanicus')
+    expect { described_class.create!(username: 'botanicus') }.to(
+      raise_error(Ohm::UniqueIndexViolation))
+  end
+
+  it 'is not possible to use an empty username' do
+    expect { described_class.create! }.to(
+      raise_error(ExpensesTracker::InvalidObject))
   end
 
   context 'authentication' do
     before(:each) do
       subject.username = 'botanicus'
-      subject.password = '123456789'
-      subject.save
+      subject.password = subject.password_confirmation = '123456789'
+      subject.save!
     end
 
     it 'is possible to log in with valid credentials' do

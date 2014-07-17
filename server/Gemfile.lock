@@ -48,6 +48,9 @@ GEM
       msgpack
       nido
       redic
+    ohm-validations (0.0.1)
+      ohm
+      scrivener
     pry (0.9.12.6)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -72,6 +75,7 @@ GEM
     rspec-mocks (3.0.2)
       rspec-support (~> 3.0.0)
     rspec-support (3.0.2)
+    scrivener (0.2.0)
     sinatra (1.4.5)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -93,6 +97,7 @@ DEPENDENCIES
   guard-rack
   jwt
   ohm
+  ohm-validations
   pry
   rspec
   rspec-sane-http!
