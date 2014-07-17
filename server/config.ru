@@ -6,10 +6,12 @@
 
 require 'sinatra'
 require 'json'
+require 'jwt'
 
 require_relative './lib/expenses-tracker/models'
 
 # REST API.
+JWT_SECRET = 'bdd4bb20838e6156f54054399434783c'
 
 # Default to JSON.
 before do
@@ -26,6 +28,17 @@ post '/api/users' do
     user = ExpensesTracker::User.create!(data)
     status 201; user.to_json
   rescue ExpensesTracker::InvalidObject, ExpensesTracker::UndefinedAttribute, JSON::ParserError => error
+    status 400; {message: error.message}.to_json
+  end
+end
+
+post '/api/sessions' do
+  begin
+    data  = JSON.parse(env['rack.input'].read)
+    user  = ExpensesTracker::User.authenticate!(data['username'], data['password'])
+    token = JWT.encode({username: user.username}, JWT_SECRET)
+    status 201; {token: token}.to_json
+  rescue ExpensesTracker::UnauthenticatedUser, JSON::ParserError => error
     status 400; {message: error.message}.to_json
   end
 end

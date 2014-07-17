@@ -28,6 +28,14 @@ module ExpensesTracker
     end
   end
 
+  class UnauthenticatedUser < StandardError
+    include ErrorAsJSON
+
+    def initialize(username)
+      super("Invalid username/password combination for user #{username}.")
+    end
+  end
+
   class User < Ohm::Model
     include Ohm::Validations
 
@@ -57,6 +65,12 @@ module ExpensesTracker
         encrypted_password = BCrypt::Engine.hash_secret(password, user.salt)
         user if user.encrypted_password == encrypted_password
       end
+    end
+
+    def self.authenticate!(username, password)
+      user = self.authenticate(username, password)
+      raise UnauthenticatedUser.new(username) unless user
+      return user
     end
 
     # Hooks.

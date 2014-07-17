@@ -1,3 +1,6 @@
+# This is an INTEGRATION test. If the server
+# ain't running, the test ain't gonna work.
+
 require 'spec_helper'
 
 shared_examples 'single page app route' do
