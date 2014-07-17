@@ -11,13 +11,16 @@ require_relative './lib/expenses-tracker/models'
 
 # REST API.
 
+# Default to JSON.
+before do
+  content_type :json
+end
+
 # Sign-up. Open to everyone.
 #
 # Normally you'd want to have some email confirmation,
 # but it's not part of the spec and I feel lazy :)
 post '/api/users' do
-  content_type :json
-
   begin
     data = JSON.parse(env['rack.input'].read)
     user = ExpensesTracker::User.create!(data)
