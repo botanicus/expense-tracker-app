@@ -4,6 +4,7 @@ gem 'sinatra'
 gem 'warden'
 gem 'jwt'
 gem 'ohm'
+gem 'bcrypt'
 
 gem 'pry', groups: [:development, :test]
 
