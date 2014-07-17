@@ -9,6 +9,21 @@ require 'json'
 
 require_relative './lib/expenses-tracker/models'
 
+# REST API.
+
+# Sign-up. Open to everyone.
+#
+# Normally you'd want to have some email confirmation,
+# but it's not part of the spec and I feel lazy :)
+post '/api/users' do
+  data = JSON.parse(env['rack.input'].read)
+  if user = ExpensesTracker::User.create(data)
+    status 201; user.to_json
+  else
+    status 400; user.errors.to_json
+  end
+end
+
 # Error handlers.
 not_found do
   # This would OBVIOUSLY be handled by Nginx.

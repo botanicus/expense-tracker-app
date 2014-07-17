@@ -33,3 +33,22 @@ end
 describe 'GET /a/b/c/d/randompage345' do
   it_behaves_like 'single page app route'
 end
+
+# REST API.
+data = {
+  username: 'botanicus',
+  password: '12345',
+  password_confirmation: '12345'
+}.to_json
+
+describe 'POST /api/users', data: data do
+  it 'returns HTTP 201 created' do
+    expect(response.status).to eq(201)
+  end
+
+  it 'returns the newly created user record (public attrs only)' do
+    user = JSON.parse(response.body.readpartial)
+    expect(user.keys.sort).to eq(['username'])
+    expect(user['username']).to eq('botanicus')
+  end
+end
