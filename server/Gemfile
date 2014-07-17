@@ -1,0 +1,13 @@
+source 'https://rubygems.org'
+
+gem 'sinatra'
+gem 'warden'
+
+gem 'pry', groups: [:development, :test]
+
+gem 'guard-rack', group: :development
+
+group(:test) do
+  gem 'rspec'
+  gem 'rspec-sane-http', github: 'botanicus/rspec-sane-http'
+end
