@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'sinatra'
 gem 'warden'
 gem 'jwt'
+gem 'ohm'
 
 gem 'pry', groups: [:development, :test]
 

@@ -1,3 +1,4 @@
 guard 'rack', port: 5000 do
   watch(/^(Gemfile.lock|config.ru)$/)
+  watch(/^lib\/)
 end

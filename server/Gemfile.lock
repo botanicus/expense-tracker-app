@@ -26,6 +26,7 @@ GEM
       libnotify
       rb-inotify
       spoon
+    hiredis (0.5.2)
     http (0.6.1)
       http_parser.rb (~> 0.6.0)
     http_parser.rb (0.6.0)
@@ -39,7 +40,13 @@ GEM
       rb-inotify (>= 0.9)
     lumberjack (1.0.5)
     method_source (0.8.2)
+    msgpack (0.5.8)
     multi_json (1.10.1)
+    nido (0.0.1)
+    ohm (2.0.1)
+      msgpack
+      nido
+      redic
     pry (0.9.12.6)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -50,6 +57,8 @@ GEM
     rb-fsevent (0.9.4)
     rb-inotify (0.9.4)
       ffi (>= 0.5.0)
+    redic (1.1.1)
+      hiredis
     rspec (3.0.0)
       rspec-core (~> 3.0.0)
       rspec-expectations (~> 3.0.0)
@@ -81,6 +90,7 @@ PLATFORMS
 DEPENDENCIES
   guard-rack
   jwt
+  ohm
   pry
   rspec
   rspec-sane-http!

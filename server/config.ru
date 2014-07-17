@@ -5,6 +5,9 @@
 # doing, it's just matter of convenience.
 
 require 'sinatra'
+require 'json'
+
+require_relative './lib/expenses-tracker/models'
 
 # Error handlers.
 not_found do
