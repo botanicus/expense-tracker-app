@@ -13,11 +13,10 @@ module ExpensesTracker
     attribute :encrypted_password
 
     def self.authenticate(username, password)
-      user = self.find(username: username).first
-      encrypted_password = BCrypt::Engine.hash_secret(password, user.salt)
-      user if user.encrypted_password == encrypted_password
-    rescue Ohm::IndexNotFound
-      # Return nil if user doesn't exist.
+      if user = self.with(:username, username)
+        encrypted_password = BCrypt::Engine.hash_secret(password, user.salt)
+        user if user.encrypted_password == encrypted_password
+      end
     end
 
     def password=(password)

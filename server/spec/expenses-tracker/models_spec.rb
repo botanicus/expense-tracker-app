@@ -7,6 +7,10 @@ describe ExpensesTracker::User do
     expect(subject.username).to eq('botanicus')
   end
 
+  it 'is not possible to save multiple users under the same username' do
+    described_class.create(username: 'botanicus')
+  end
+
   context 'authentication' do
     before(:each) do
       subject.username = 'botanicus'
@@ -28,9 +32,9 @@ describe ExpensesTracker::User do
       user = described_class.authenticate('johndoe', '987654321')
       expect(user).to be_nil
     end
+  end
 
-    after(:each) do
-      ExpensesTracker::User.redis.call(:flushdb)
-    end
+  after(:each) do
+    ExpensesTracker::User.redis.call(:flushdb)
   end
 end
