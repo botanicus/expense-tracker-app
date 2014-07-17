@@ -41,8 +41,4 @@ describe ExpensesTracker::User do
       expect(user).to be_nil
     end
   end
-
-  after(:each) do
-    ExpensesTracker::User.redis.call(:flushdb)
-  end
 end
