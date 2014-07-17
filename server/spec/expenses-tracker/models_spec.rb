@@ -20,9 +20,10 @@ describe ExpensesTracker::User do
 
   context 'authentication' do
     before(:each) do
-      subject.username = 'botanicus'
-      subject.password = subject.password_confirmation = '123456789'
-      subject.save!
+      described_class.create!(
+        username: 'botanicus',
+        password: '123456789',
+        password_confirmation: '123456789')
     end
 
     it 'is possible to log in with valid credentials' do
