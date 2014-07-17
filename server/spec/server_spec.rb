@@ -101,7 +101,7 @@ context 'extra attributes' do
   describe 'POST /api/users', data: {a: 1}.to_json do
     it_behaves_like 'bad request'
 
-    it 'reports that XXX is missing' do
+    it 'reports that attribute a is missing' do
       user = JSON.parse(response.body.readpartial)
       expect(user['message']).to match(/Attribute 'a' doesn't exist/)
     end
