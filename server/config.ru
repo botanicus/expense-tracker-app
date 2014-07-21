@@ -27,7 +27,9 @@ post '/api/users' do
     data = JSON.parse(env['rack.input'].read)
     user = ExpensesTracker::User.create!(data)
     status 201; user.to_json
-  rescue ExpensesTracker::InvalidObject, ExpensesTracker::UndefinedAttribute, JSON::ParserError => error
+  rescue ExpensesTracker::InvalidObject,
+         ExpensesTracker::UndefinedAttribute,
+         JSON::ParserError => error
     status 400; {message: error.message}.to_json
   end
 end
@@ -35,10 +37,17 @@ end
 post '/api/sessions' do
   begin
     data  = JSON.parse(env['rack.input'].read)
-    user  = ExpensesTracker::User.authenticate!(data['username'], data['password'])
+    user  = ExpensesTracker::User.authenticate!(
+      *data.values_at('username', 'password'))
+
     token = JWT.encode({username: user.username}, JWT_SECRET)
-    status 201; {token: token}.to_json
-  rescue ExpensesTracker::UnauthenticatedUser, JSON::ParserError => error
+
+    # With token-based authentication, there's
+    # no such thing as sessions. Hence we're not
+    # really creating anything, hence HTTP 200.
+    status 200; {token: token}.to_json
+  rescue ExpensesTracker::UnauthenticatedUser,
+         JSON::ParserError => error
     status 400; {message: error.message}.to_json
   end
 end
