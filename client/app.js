@@ -33,13 +33,46 @@ app.controller('MainController', function ($scope) {
 app.controller('HomeController', function ($scope) {
 });
 
-app.controller('SignUpController', function ($scope, $location, User) {
+app.controller('SignUpController', function ($scope, $location, $modal, User) {
   $scope.user = {};
 
-  $scope.register = function () {
-    var user = new User($scope.user);
+  $scope.register = function (credentials) {
+    var user = new User(credentials);
     user.$save();
-    // TODO: Log in.
     $location.path('/app');
   };
+
+  $scope.showTC = function () {
+    $scope.modalInstance = $modal.open({
+      templateUrl: 'templates/toc.html',
+      scope: $scope
+    });
+  };
+
+  $scope.closeModal = function () {
+    $scope.modalInstance.close();
+  }
+});
+
+
+// TODO: Extract this elsewhere.
+// Shamelessly stolen from http://www.ng-newsletter.com/posts/validations.html.
+// TODO: prevent form submission until checked.
+app.directive('unique', function ($http) {
+  return {
+    require: 'ngModel',
+    link: function(scope, element, attrs, c) {
+      scope.$watch(attrs.ngModel, function () {
+        $http({
+          method: 'POST',
+          url: '/api/username-check/' + attrs.unique,
+          data: {'field': attrs.unique}
+        }).success(function(data, status, headers, cfg) {
+          c.$setValidity('unique', data.isUnique);
+        }).error(function(data, status, headers, cfg) {
+          c.$setValidity('unique', false);
+        });
+      });
+    }
+  }
 });
