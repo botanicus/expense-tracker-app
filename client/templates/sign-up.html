@@ -12,12 +12,28 @@
   <fieldset>
     <legend>Sign Up For a New Account!</legend>
 
-    <div class="form-group" ng-class="{ 'has-error' : signupForm.user.username.$invalid && !signupForm.user.username.$pristine }">
+    <div class="form-group">
       <div class="large-12 columns">
         <label class="col-md-2 control-label" for="username">User name</label>
+
         <div class="col-md-4">
-          <input type="text" class="form-control input-md" id="username" ng-model="user.username" placeholder="Pick a user name. Alphanumeric characters only." minlength="3" ng-pattern="/^\w+$/" required>
-          <p ng-show="signupForm.user.username.$error.minlength" class="help-block error">Username has to be longer than 3 characters.</p>
+          <input
+            type="text"
+            name="username"
+            class="form-control input-md"
+            id="username"
+            ng-model="user.username"
+            placeholder="Pick a user name. No spaces."
+            ng-model-options="{updateOn: 'blur', debounce: 'blur'}"
+            ng-minlength="3"
+            ng-pattern="/^[\w\d-@]+$/"
+            required />
+
+          <!-- Validation messages. -->
+          <div class="errors">
+            <p ng-show="signupForm.username.$error.minlength" class="help-block error">Username has to be longer than 3 characters.</p>
+            <p ng-show="signupForm.username.$error.pattern" class="help-block error">Username has to contain only alphanumeric characters, dash or the at sign.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -25,8 +41,23 @@
     <div class="form-group">
       <div class="large-12 columns">
         <label class="col-md-2 control-label" for="password">Password</label>
+
         <div class="col-md-4">
-          <input type="password" class="form-control input-md" id="password" ng-model="user.password" placeholder="Pick a password with at least 6 characters in it." minlength="6" required>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            class="form-control input-md"
+            ng-model="user.password"
+            ng-model-options="{updateOn: 'blur', debounce: 'blur'}"
+            placeholder="Pick a password with at least 6 characters in it."
+            minlength="6"
+            required />
+
+          <!-- Validation messages. -->
+          <div class="errors">
+            <p ng-show="signupForm.password.$error.minlength" class="help-block error">Username has to be longer than 3 characters.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -37,8 +68,29 @@
       that those match and that's it, we don't pass it any further.
       -->
       <label class="col-md-2 control-label" for="passwordConfirmation">Confirm password</label>
+
       <div class="col-md-4">
-        <input type="password" class="form-control input-md" id="passwordConfirmation" ng-model="passwordConfirmation" placeholder="The same password again." required>
+        <!--
+        Here, notice that we cannot rely on blur, since the next blur
+        will be very likely connected with a click to the submit button
+        which would otherwise be disabled. Dammit, this shit used to be
+        easy when we had no choices of working out JS magic :)
+        -->
+        <input
+          type="password"
+          name="passwordConfirmation"
+          id="passwordConfirmation"
+          class="form-control input-md"
+          ng-model="user.passwordConfirmation"
+          ng-model-options="{updateOn: 'default blur', debounce: {'default': 500, blur: 0}}"
+          placeholder="The same password again."
+          value-match="password"
+          required />
+
+        <!-- Validation messages. -->
+        <div class="errors">
+          <p ng-show="signupForm.passwordConfirmation.$error.valueMatch" class="help-block error">Password doesn't match the confirmation.</p>
+        </div>
       </div>
     </div>
 

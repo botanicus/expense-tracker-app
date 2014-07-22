@@ -6,6 +6,7 @@ app.config(function ($locationProvider, $routeProvider) {
     templateUrl: '/templates/home.html'
   }).
   when('/sign-up', {
+    title: 'Sign Up For Expenses Tracker',
     controller: 'SignUpController',
     templateUrl: '/templates/sign-up.html'
   }).
@@ -75,4 +76,40 @@ app.directive('unique', function ($http) {
       });
     }
   }
+});
+
+// TODO: This should observe password and update on its
+// change as well.
+app.directive('valueMatch', function () {
+  return {
+    restrict: 'A',
+    require: 'ngModel',
+
+    link: function (scope, element, attrs, ctrl) {
+      var originInputName = attrs.valueMatch;
+      var originElement = scope.signupForm[originInputName];
+      var inputElement = element[0];
+
+      var valueMatchValidator = function (value) {
+        if (inputElement.value == '' && originElement.$viewValue == undefined) {
+          ctrl.$setValidity('valueMatch', true);
+        } else {
+          ctrl.$setValidity('valueMatch',
+            inputElement.value == originElement.$viewValue);
+
+          // Otherwise $modelValue ain't be updated when
+          // calling from $parsers.
+          return true;
+        };
+      };
+
+      // This is called every time value is parsed
+      // into the model when the user updates it.
+      ctrl.$parsers.unshift(valueMatchValidator);
+
+      // This is called every time value is updated
+      // on the DOM element.
+      ctrl.$formatters.unshift(valueMatchValidator);
+    }
+  };
 });
