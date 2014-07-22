@@ -1,0 +1,48 @@
+<form name="loginForm" class="form-horizontal" novalidate ng-submit="logIn(credentials)">
+  <fieldset>
+    <legend>Log Into Your Account</legend>
+
+    <span class="errors" ng-show="errorMessage" ng-bind="errorMessage"></span>
+
+    <div class="form-group">
+      <div class="large-12 columns">
+        <label class="col-md-2 control-label" for="username">User name</label>
+
+        <div class="col-md-4">
+          <input
+            type="text"
+            name="username"
+            class="form-control input-md"
+            id="username"
+            ng-model="credentials.username"
+            placeholder="Your user name."
+            required />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="large-12 columns">
+        <label class="col-md-2 control-label" for="password">Password</label>
+
+        <div class="col-md-4">
+          <input
+            type="password"
+            name="password"
+            id="password"
+            class="form-control input-md"
+            ng-model="credentials.password"
+            placeholder="Your password."
+            required />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="col-md-2 control-label"></div>
+      <div class="col-md-4">
+        <button type="submit" class="btn btn-success" ng-disabled="loginForm.$invalid">Log In!</button>
+      </div>
+    </div>
+  </fieldset>
+</form>

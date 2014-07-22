@@ -50,6 +50,8 @@ post '/api/sessions' do
     user  = ExpensesTracker::User.authenticate!(
       *data.values_at('username', 'password'))
 
+    # We might want to use iat and exp claims for expiration.
+    # http://www.intridea.com/blog/2013/11/7/json-web-token-the-useful-little-standard-you-haven-t-heard-about
     token = JWT.encode({username: user.username}, JWT_SECRET)
 
     # With token-based authentication, there's

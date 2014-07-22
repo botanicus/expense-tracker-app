@@ -29,27 +29,49 @@ app.run(function ($location, $rootScope, $location) {
   });
 });
 
-app.controller('MainController', function ($scope) {
-});
+app.controller('MainController', function ($rootScope, $scope, $http, $window, $location) {
+  if ($window.sessionStorage.username) {
+    $rootScope.username = $window.sessionStorage.username;
+  };
 
-app.controller('HomeController', function ($scope) {
+  $scope.logIn = function (credentials) {
+    $http
+      .post('/api/sessions', credentials)
+      .success(function (data, status, headers, config) {
+        // Let's use the session storage, it gets wiped out when
+        // the tab is closed.
+        $window.sessionStorage.token = data.token;
+        $window.sessionStorage.username = credentials.username;
+        $rootScope.username = credentials.username;
+
+        $location.path('/dashboard');
+      })
+      .error(function (data, status, headers, config) {
+        delete $window.sessionStorage.token;
+        delete $window.sessionStorage.username;
+        delete $rootScope.username;
+        $scope.errorMessage = data.message;
+      });
+  };
 });
 
 app.controller('LoginController', function ($scope) {
   $scope.credentials = {};
 
-  $scope.logIn = function () {
-    User.login(credentials);
-  };
+  // logIn is defined in the MainController.
 });
 
-app.controller('SignUpController', function ($scope, $modal, User) {
+app.controller('HomeController', function ($scope) {
+});
+
+app.controller('SignUpController', function ($scope, $modal, $location, User) {
   $scope.user = {};
 
   $scope.register = function (user) {
     var user = new User(user);
     user.$save();
-    $location.path('/app');
+    $scope.logIn(user);
+    $location.path('/dashboard');
   };
 
   $scope.showTC = function () {
