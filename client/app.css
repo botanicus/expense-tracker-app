@@ -1,0 +1,11 @@
+input.ng-invalid {
+  border: 1px solid red;
+}
+
+input.ng-valid, input.ng-pristine {
+  border: 1px solid #ccc;
+}
+
+form .errors {
+  background-color: yellow;
+}
