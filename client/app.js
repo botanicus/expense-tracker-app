@@ -11,9 +11,9 @@ app.config(function ($locationProvider, $routeProvider) {
     templateUrl: '/templates/sign-up.html'
   }).
   when('/login', {
-    // TODO: How to go about it?
-    controller: 'SignUpController',
-    templateUrl: '/templates/sign-up.html'
+    title: 'Log Into Expenses Tracker',
+    controller: 'LoginController',
+    templateUrl: '/templates/login.html'
   });
 
   $routeProvider.otherwise({'redirectTo': '/'});
@@ -35,7 +35,15 @@ app.controller('MainController', function ($scope) {
 app.controller('HomeController', function ($scope) {
 });
 
-app.controller('SignUpController', function ($scope, $location, $modal, User) {
+app.controller('LoginController', function ($scope) {
+  $scope.credentials = {};
+
+  $scope.logIn = function () {
+    User.login(credentials);
+  };
+});
+
+app.controller('SignUpController', function ($scope, $modal, User) {
   $scope.user = {};
 
   $scope.register = function (user) {
@@ -108,7 +116,6 @@ app.directive('valueMatch', function () {
 
       scope.$watch(attrs.watchModel, function (value) {
         var fn = valueMatchValidatorGenerator(function () {});
-        console.log('X', value)
         fn(value);
       });
 
