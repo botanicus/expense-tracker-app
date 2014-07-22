@@ -40,7 +40,7 @@ module ExpensesTracker
     include Ohm::Validations
 
     # Public attributes.
-    attr_accessor :password, :password_confirmation
+    attr_accessor :password, :passwordConfirmation
 
     attribute :username
     index :username
@@ -49,7 +49,7 @@ module ExpensesTracker
     def validate
       assert_present(:username)
 
-      if self.password != self.password_confirmation
+      if self.password != self.passwordConfirmation
         self.errors[:password].push(:not_confirmed) && false
       elsif self.salt.nil? || self.encrypted_password.nil?
         self.errors[:password].push(:not_present) && false
