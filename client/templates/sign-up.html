@@ -27,12 +27,14 @@
             ng-model-options="{updateOn: 'blur', debounce: 'blur'}"
             ng-minlength="3"
             ng-pattern="/^[\w\d-@]+$/"
+            unique
             required />
 
           <!-- Validation messages. -->
           <div class="errors">
             <p ng-show="signupForm.username.$error.minlength" class="help-block error">Username has to be longer than 3 characters.</p>
             <p ng-show="signupForm.username.$error.pattern" class="help-block error">Username has to contain only alphanumeric characters, dash or the at sign.</p>
+            <p ng-show="signupForm.username.$error.unique" class="help-block error">This user name is already taken, sorry.</p>
           </div>
         </div>
       </div>

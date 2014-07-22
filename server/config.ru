@@ -34,6 +34,16 @@ post '/api/users' do
   end
 end
 
+post '/api/username-check' do
+  begin
+    data = JSON.parse(env['rack.input'].read)
+    user = ExpensesTracker::User.with(:username, data['username'])
+    status 200; {available: ! user}.to_json
+  rescue JSON::ParserError => error
+    status 400; {message: error.message}.to_json
+  end
+end
+
 post '/api/sessions' do
   begin
     data  = JSON.parse(env['rack.input'].read)

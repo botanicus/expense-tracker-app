@@ -63,16 +63,15 @@ app.directive('unique', function ($http) {
   return {
     require: 'ngModel',
     link: function(scope, element, attrs, c) {
+      console.log(element[0].value)
       scope.$watch(attrs.ngModel, function () {
-        $http({
-          method: 'POST',
-          url: '/api/username-check/' + attrs.unique,
-          data: {'field': attrs.unique}
-        }).success(function(data, status, headers, cfg) {
-          c.$setValidity('unique', data.isUnique);
-        }).error(function(data, status, headers, cfg) {
-          c.$setValidity('unique', false);
-        });
+        if (element[0].value) {
+          var data = {username: element[0].value}
+          $http.post('/api/username-check', data).
+            success(function (data, status, headers, cfg) {
+              c.$setValidity('unique', data.available);
+          });
+        };
       });
     }
   }
