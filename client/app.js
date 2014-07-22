@@ -37,8 +37,8 @@ app.controller('HomeController', function ($scope) {
 app.controller('SignUpController', function ($scope, $location, $modal, User) {
   $scope.user = {};
 
-  $scope.register = function (credentials) {
-    var user = new User(credentials);
+  $scope.register = function (user) {
+    var user = new User(user);
     user.$save();
     $location.path('/app');
   };
@@ -90,26 +90,34 @@ app.directive('valueMatch', function () {
       var originElement = scope.signupForm[originInputName];
       var inputElement = element[0];
 
-      var valueMatchValidator = function (value) {
-        if (inputElement.value == '' && originElement.$viewValue == undefined) {
-          ctrl.$setValidity('valueMatch', true);
-        } else {
-          ctrl.$setValidity('valueMatch',
-            inputElement.value == originElement.$viewValue);
+      var valueMatchValidatorGenerator = function (retFn) {
+        return function (value) {
+          if (inputElement.value == '' && originElement.$viewValue == undefined) {
+            ctrl.$setValidity('valueMatch', true);
 
-          // Otherwise $modelValue ain't be updated when
-          // calling from $parsers.
-          return true;
+            return retFn(false, undefined);
+          } else {
+            var validity = inputElement.value == originElement.$viewValue;
+            ctrl.$setValidity('valueMatch', validity);
+
+            return retFn(validity, value);
+          };
         };
       };
 
       // This is called every time value is parsed
       // into the model when the user updates it.
-      ctrl.$parsers.unshift(valueMatchValidator);
+      ctrl.$parsers.unshift(valueMatchValidatorGenerator(function (valid, value) {
+        // if it's valid, return the value to the model,
+        // otherwise return undefined.
+        return valid ? value : undefined;
+      }));
 
-      // This is called every time value is updated
-      // on the DOM element.
-      ctrl.$formatters.unshift(valueMatchValidator);
+      // This is called every time value is updated on the DOM element.
+      ctrl.$formatters.unshift(valueMatchValidatorGenerator(function (valid, value) {
+        // Return the value or nothing will be written to the DOM.
+        return value;
+      }));
     }
   };
 });
