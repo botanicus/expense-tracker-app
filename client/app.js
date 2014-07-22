@@ -22,9 +22,12 @@ app.config(function ($locationProvider, $routeProvider) {
 });
 
 /* Set up the title. */
-app.run(function ($location, $rootScope) {
+app.run(function ($location, $rootScope, $location) {
   $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
     $rootScope.title = current.$$route ? current.$$route.title : null;
+
+    $rootScope.location = $location.path();
+    console.log("SET location to " + $rootScope.location)
   });
 });
 
