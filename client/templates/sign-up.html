@@ -58,7 +58,7 @@
 
           <!-- Validation messages. -->
           <div class="errors">
-            <p ng-show="signupForm.password.$error.minlength" class="help-block error">Username has to be longer than 3 characters.</p>
+            <p ng-show="signupForm.password.$error.minlength" class="help-block error">Username has to be longer than 6 characters.</p>
           </div>
         </div>
       </div>
@@ -86,7 +86,10 @@
           ng-model="user.passwordConfirmation"
           ng-model-options="{updateOn: 'default blur', debounce: {'default': 500, blur: 0}}"
           placeholder="The same password again."
+
           value-match="password"
+          watch-model="user.password"
+
           required />
 
         <!-- Validation messages. -->

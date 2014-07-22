@@ -25,9 +25,7 @@ app.config(function ($locationProvider, $routeProvider) {
 app.run(function ($location, $rootScope, $location) {
   $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
     $rootScope.title = current.$$route ? current.$$route.title : null;
-
     $rootScope.location = $location.path();
-    console.log("SET location to " + $rootScope.location)
   });
 });
 
@@ -80,8 +78,9 @@ app.directive('unique', function ($http) {
   }
 });
 
-// TODO: This should observe password and update on its
-// change as well.
+// Adapted from http://www.benlesh.com/2012/12/angular-js-custom-validation-via.html
+//
+// TODO: Do not hardcode signupForm.
 app.directive('valueMatch', function () {
   return {
     restrict: 'A',
@@ -106,6 +105,12 @@ app.directive('valueMatch', function () {
           };
         };
       };
+
+      scope.$watch(attrs.watchModel, function (value) {
+        var fn = valueMatchValidatorGenerator(function () {});
+        console.log('X', value)
+        fn(value);
+      });
 
       // This is called every time value is parsed
       // into the model when the user updates it.
