@@ -14,11 +14,46 @@ app.config(function ($locationProvider, $routeProvider) {
     title: 'Log Into Expenses Tracker',
     controller: 'LoginController',
     templateUrl: '/templates/login.html'
+  }).
+  when('/dashboard', {
+    title: 'Expenses Tracker Dashboard',
+    controller: 'DashboardController',
+    templateUrl: '/templates/dashboard.html',
+    resolve: {
+      expenses: function (Expense) {
+        return Expense.query();
+      }
+    }
   });
 
   $routeProvider.otherwise({'redirectTo': '/'});
 
   $locationProvider.html5Mode(true);
+});
+
+app.factory('AuthInterceptor', function ($window, $location, $q) {
+  return {
+    request: function (config) {
+      config.headers = config.headers || {};
+      if ($window.sessionStorage.token) {
+        var token = $window.sessionStorage.token;
+        var value = 'JWT token="' + token + '"';
+        config.headers.Authorization = value;
+      }
+      return config || $q.when(config);
+    },
+    response: function (response) {
+      if (response.status === 401) {
+        $location.path('/login');
+      };
+      return response || $q.when(response);
+    }
+  };
+});
+
+// Register the AuthInterceptor.
+app.config(function ($httpProvider) {
+  $httpProvider.interceptors.push('AuthInterceptor');
 });
 
 /* Set up the title. */
@@ -62,6 +97,10 @@ app.controller('LoginController', function ($scope) {
 });
 
 app.controller('HomeController', function ($scope) {
+});
+
+app.controller('DashboardController', function ($scope, expenses) {
+  $scope.expenses = expenses;
 });
 
 app.controller('SignUpController', function ($scope, $modal, $location, User) {
