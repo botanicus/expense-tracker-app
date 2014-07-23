@@ -10,6 +10,12 @@ require 'jwt'
 
 require_relative './lib/expenses-tracker/models'
 
+class AuthenticationError < StandardError
+  def initialize
+    super('No Authorization header provided.')
+  end
+end
+
 # REST API.
 JWT_SECRET = 'bdd4bb20838e6156f54054399434783c'
 
@@ -17,6 +23,8 @@ JWT_SECRET = 'bdd4bb20838e6156f54054399434783c'
 before do
   content_type :json
 end
+
+set :sessions, false
 
 # Sign-up. Open to everyone.
 #
@@ -61,6 +69,19 @@ post '/api/sessions' do
   rescue ExpensesTracker::UnauthenticatedUser,
          JSON::ParserError => error
     status 400; {message: error.message}.to_json
+  end
+end
+
+get '/api/expenses' do
+  begin
+    env['HTTP_AUTHORIZATION'] || raise(AuthenticationError.new)
+    token = env['HTTP_AUTHORIZATION'].match(/JWT token="(.+)"/)[1]
+    JWT.decode(token, JWT_SECRET)
+    [{title:"a"}].to_json
+  rescue JSON::ParserError => error
+    status 400; {message: error.message}.to_json
+  rescue JWT::DecodeError, AuthenticationError => error
+    status 401; {message: error}.to_json
   end
 end
 
