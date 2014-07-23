@@ -28,7 +28,7 @@ end
 set :sessions, false
 
 helpers do
-  def authenticate(&block)
+  def ensure_authentication(&block)
     env['user'] || raise(AuthenticationError.new)
     block.call(env['user'])
   rescue AuthenticationError => error
@@ -69,7 +69,7 @@ end
 
 post '/api/sessions' do
   begin
-    user  = ExpensesTracker::User.authenticate!(
+    user  = ExpensesTracker::User.ensure_authentication!(
       *env['json'].values_at('username', 'password'))
 
     # We might want to use iat and exp claims for expiration.
@@ -86,13 +86,13 @@ post '/api/sessions' do
 end
 
 get '/api/expenses' do
-  authenticate do |user|
+  ensure_authentication do |user|
     user.expenses.to_a.to_json
   end
 end
 
 post '/api/expenses' do
-  authenticate do |user|
+  ensure_authentication do |user|
     expense = ExpensesTracker::Expense.create(env['json'])
     user.expenses.add(expense)
 
@@ -101,7 +101,7 @@ post '/api/expenses' do
 end
 
 get '/api/expenses/:id' do
-  authenticate do |user|
+  ensure_authentication do |user|
     ensure_expense_authorship(params[:id], user) do |expense|
       expense.to_json
     end
@@ -109,7 +109,7 @@ get '/api/expenses/:id' do
 end
 
 put '/api/expenses/:id' do
-  authenticate do |user|
+  ensure_authentication do |user|
     ensure_expense_authorship(params[:id], user) do |expense|
       expense.update_attributes(env['json'])
       expense.to_json
@@ -118,7 +118,7 @@ put '/api/expenses/:id' do
 end
 
 delete '/api/expenses/:id' do
-  authenticate do |user|
+  ensure_authentication do |user|
     ensure_expense_authorship(params[:id], user) do |expense|
       expense.destroy
       status 204
