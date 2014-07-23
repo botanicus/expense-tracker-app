@@ -9,6 +9,7 @@ require 'json'
 require 'jwt'
 
 require_relative './lib/expenses-tracker/models'
+require_relative './lib/expenses-tracker/middlewares'
 
 class AuthenticationError < StandardError
   def initialize
@@ -28,12 +29,9 @@ set :sessions, false
 
 helpers do
   def authenticate(&block)
-    env['HTTP_AUTHORIZATION'] || raise(AuthenticationError.new)
-    token = env['HTTP_AUTHORIZATION'].match(/JWT token="(.+)"/)[1]
-    data = JWT.decode(token, JWT_SECRET)
-    user = ExpensesTracker::User.with(:username, data['username'])
-    block.call(user)
-  rescue JWT::DecodeError, AuthenticationError => error
+    env['user'] || raise(AuthenticationError.new)
+    block.call(env['user'])
+  rescue AuthenticationError => error
     status 401; {message: error}.to_json
   end
 
@@ -58,20 +56,15 @@ post '/api/users' do
     user = ExpensesTracker::User.create!(env['json'])
     status 201; user.to_json
   rescue ExpensesTracker::InvalidObject,
-         ExpensesTracker::UndefinedAttribute,
-         JSON::ParserError => error
+         ExpensesTracker::UndefinedAttribute => error
     status 400; {message: error.message}.to_json
   end
 end
 
 post '/api/username-check' do
-  begin
-    name = env['json']['username']
-    user = ExpensesTracker::User.with(:username, name)
-    status 200; {available: ! user}.to_json
-  rescue JSON::ParserError => error
-    status 400; {message: error.message}.to_json
-  end
+  name = env['json']['username']
+  user = ExpensesTracker::User.with(:username, name)
+  status 200; {available: ! user}.to_json
 end
 
 post '/api/sessions' do
@@ -87,8 +80,7 @@ post '/api/sessions' do
     # no such thing as sessions. Hence we're not
     # really creating anything, hence HTTP 200.
     status 200; {token: token}.to_json
-  rescue ExpensesTracker::UnauthenticatedUser,
-         JSON::ParserError => error
+  rescue ExpensesTracker::UnauthenticatedUser => error
     status 400; {message: error.message}.to_json
   end
 end
@@ -177,32 +169,8 @@ not_found do
   end
 end
 
-class ParsePostedJSON
-  def initialize(app)
-    @app = app
-  end
 
-  def call(env)
-    begin
-      if env['rack.input']
-        data = env['rack.input'].read
-        data.force_encoding('utf-8')
-        env['json'] = JSON.parse(data)
-      end
-    rescue JSON::ParserError => error
-      body = {message: error.message}.to_json
-
-      headers = {
-        'Content-Type' => 'application/json',
-        'Content-Length' => body.bytesize
-      }
-
-      return [400, headers, [body]]
-    end
-
-    @app.call(env)
-  end
-end
-
+use AuthenticationMiddleware, JWT_SECRET
 use ParsePostedJSON
+
 run Sinatra::Application
