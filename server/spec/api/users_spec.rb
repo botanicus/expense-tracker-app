@@ -12,7 +12,7 @@ describe 'Users endpoint' do
   data = {
     username: 'botanicus',
     password: '12345',
-    password_confirmation: '12345'
+    passwordConfirmation: '12345'
   }
 
   describe 'POST /api/users', data: data.to_json do
@@ -47,7 +47,7 @@ describe 'Users endpoint' do
   end
 
   context 'Impartial data' do
-    impartial_data = data.reject { |key, _| key == :password_confirmation }
+    impartial_data = data.reject { |key, _| key == :passwordConfirmation }
 
     describe 'POST /api/users', data: impartial_data.to_json do
       it_behaves_like 'bad request'

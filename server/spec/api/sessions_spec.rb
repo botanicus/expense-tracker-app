@@ -16,11 +16,11 @@ describe 'Sessions endpoint' do
         ExpensesTracker::User.create!(
           username: 'botanicus',
           password: '123456789',
-          password_confirmation: '123456789')
+          passwordConfirmation: '123456789')
       end
 
-      it 'returns HTTP 201 created' do
-        expect(response.status).to eq(201)
+      it 'returns HTTP 200 OK' do
+        expect(response.status).to eq(200)
       end
 
       it 'responds with JSON content type' do

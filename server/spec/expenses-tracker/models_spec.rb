@@ -23,7 +23,7 @@ describe ExpensesTracker::User do
       described_class.create!(
         username: 'botanicus',
         password: '123456789',
-        password_confirmation: '123456789')
+        passwordConfirmation: '123456789')
     end
 
     it 'is possible to log in with valid credentials' do
