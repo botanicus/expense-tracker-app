@@ -26,14 +26,36 @@ end
 
 set :sessions, false
 
+helpers do
+  def authenticate(&block)
+    env['HTTP_AUTHORIZATION'] || raise(AuthenticationError.new)
+    token = env['HTTP_AUTHORIZATION'].match(/JWT token="(.+)"/)[1]
+    data = JWT.decode(token, JWT_SECRET)
+    user = ExpensesTracker::User.with(:username, data['username'])
+    block.call(user)
+  rescue JWT::DecodeError, AuthenticationError => error
+    status 401; {message: error}.to_json
+  end
+
+  def ensure_expense_authorship(id, user, &block)
+    expense = ExpensesTracker::Expense.get(params[:id])
+    if expense.user == user
+      block.call(expense)
+    else
+      # This happens only if we have a bug in our code
+      # or the user is tampering with the app.
+      status 403; 'This is not your expense!'
+    end
+  end
+end
+
 # Sign-up. Open to everyone.
 #
 # Normally you'd want to have some email confirmation,
 # but it's not part of the spec and I feel lazy :)
 post '/api/users' do
   begin
-    data = JSON.parse(env['rack.input'].read)
-    user = ExpensesTracker::User.create!(data)
+    user = ExpensesTracker::User.create!(env['json'])
     status 201; user.to_json
   rescue ExpensesTracker::InvalidObject,
          ExpensesTracker::UndefinedAttribute,
@@ -44,8 +66,8 @@ end
 
 post '/api/username-check' do
   begin
-    data = JSON.parse(env['rack.input'].read)
-    user = ExpensesTracker::User.with(:username, data['username'])
+    name = env['json']['username']
+    user = ExpensesTracker::User.with(:username, name)
     status 200; {available: ! user}.to_json
   rescue JSON::ParserError => error
     status 400; {message: error.message}.to_json
@@ -54,9 +76,8 @@ end
 
 post '/api/sessions' do
   begin
-    data  = JSON.parse(env['rack.input'].read)
     user  = ExpensesTracker::User.authenticate!(
-      *data.values_at('username', 'password'))
+      *env['json'].values_at('username', 'password'))
 
     # We might want to use iat and exp claims for expiration.
     # http://www.intridea.com/blog/2013/11/7/json-web-token-the-useful-little-standard-you-haven-t-heard-about
@@ -73,15 +94,43 @@ post '/api/sessions' do
 end
 
 get '/api/expenses' do
-  begin
-    env['HTTP_AUTHORIZATION'] || raise(AuthenticationError.new)
-    token = env['HTTP_AUTHORIZATION'].match(/JWT token="(.+)"/)[1]
-    JWT.decode(token, JWT_SECRET)
-    [{title:"a"}].to_json
-  rescue JSON::ParserError => error
-    status 400; {message: error.message}.to_json
-  rescue JWT::DecodeError, AuthenticationError => error
-    status 401; {message: error}.to_json
+  authenticate do |user|
+    user.expenses.to_a.to_json
+  end
+end
+
+post '/api/expenses' do
+  authenticate do |user|
+    expense = ExpensesTracker::Expense.create(env['json'])
+    user.expenses.add(expense)
+
+    status 201; expense.to_json
+  end
+end
+
+get '/api/expenses/:id' do
+  authenticate do |user|
+    ensure_expense_authorship(params[:id], user) do |expense|
+      expense.to_json
+    end
+  end
+end
+
+put '/api/expenses/:id' do
+  authenticate do |user|
+    ensure_expense_authorship(params[:id], user) do |expense|
+      expense.update_attributes(env['json'])
+      expense.to_json
+    end
+  end
+end
+
+delete '/api/expenses/:id' do
+  authenticate do |user|
+    ensure_expense_authorship(params[:id], user) do |expense|
+      expense.destroy
+      status 204
+    end
   end
 end
 
@@ -128,4 +177,32 @@ not_found do
   end
 end
 
+class ParsePostedJSON
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    begin
+      if env['rack.input']
+        data = env['rack.input'].read
+        data.force_encoding('utf-8')
+        env['json'] = JSON.parse(data)
+      end
+    rescue JSON::ParserError => error
+      body = {message: error.message}.to_json
+
+      headers = {
+        'Content-Type' => 'application/json',
+        'Content-Length' => body.bytesize
+      }
+
+      return [400, headers, [body]]
+    end
+
+    @app.call(env)
+  end
+end
+
+use ParsePostedJSON
 run Sinatra::Application
