@@ -36,6 +36,19 @@ module ExpensesTracker
     end
   end
 
+  class Expense < Ohm::Model
+    include Ohm::Validations
+
+    attribute :title
+    attribute :price
+
+    reference :user, 'ExpensesTracker::User'
+
+    def to_json
+      self.attributes.to_json
+    end
+  end
+
   class User < Ohm::Model
     include Ohm::Validations
 
@@ -45,6 +58,8 @@ module ExpensesTracker
     attribute :username
     index :username
     unique :username
+
+    set :expenses, 'ExpensesTracker::Expense'
 
     def validate
       assert_present(:username)
