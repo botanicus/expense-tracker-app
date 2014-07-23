@@ -170,7 +170,7 @@ not_found do
 end
 
 
-use AuthenticationMiddleware, JWT_SECRET
-use ParsePostedJSON
+use ExpensesTracker::AuthenticationMiddleware, JWT_SECRET
+use ExpensesTracker::ParsePostedJSON
 
 run Sinatra::Application

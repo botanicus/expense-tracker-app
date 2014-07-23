@@ -13,16 +13,16 @@ module ExpensesTracker
           token = env['HTTP_AUTHORIZATION'].match(/JWT token="(.+)"/)[1]
           data = JWT.decode(token, @secret)
           env['user'] = ExpensesTracker::User.with(:username, data['username'])
-        rescue JWT::DecodeError => error
-          body = {message: error.message}.to_json
-
-          headers = {
-            'Content-Type' => 'application/json',
-            'Content-Length' => body.bytesize.to_s
-          }
-
-          return [401, headers, [body]]
         end
+      rescue JWT::DecodeError => error
+        body = {message: error.message}.to_json
+
+        headers = {
+          'Content-Type' => 'application/json',
+          'Content-Length' => body.bytesize.to_s
+        }
+
+        return [401, headers, [body]]
       end
 
       @app.call(env)
