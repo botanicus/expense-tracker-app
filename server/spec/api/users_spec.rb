@@ -26,21 +26,6 @@ describe 'Users endpoint' do
     end
   end
 
-  shared_examples 'bad request' do
-    it 'fails with HTTP 400 bad request' do
-      expect(response.status).to eq(400)
-    end
-
-    it 'responds with JSON content type' do
-      expect(response.headers['Content-Type']).to match('application/json')
-    end
-
-    it 'the error' do
-      user = JSON.parse(response.body.readpartial)
-      expect(user['message']).not_to be_nil
-    end
-  end
-
   context 'Impartial data' do
     impartial_data = data.reject { |key, _| key == :passwordConfirmation }
 

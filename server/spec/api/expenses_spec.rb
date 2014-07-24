@@ -13,17 +13,6 @@ describe 'Expenses endpoint' do
   data = {title: '小笼包', price: 12.50, comment: 'Very yummy!'}
 
   context 'Authorization header not provided' do
-    shared_examples 'unauthorised request' do
-      it 'returns HTTP 401 unauthorised' do
-        expect(response.status).to eq(401)
-      end
-
-      it 'returns JSON body with an explanation' do
-        data = JSON.parse(response.body.readpartial)
-        expect(data['message']).to eq('No Authorization header provided.')
-      end
-    end
-
     describe 'GET /api/expenses' do
       it_behaves_like 'unauthorised request'
     end

@@ -38,16 +38,6 @@ describe 'Sessions endpoint' do
     end
   end
 
-  shared_examples 'bad request' do
-    it 'fails with HTTP 400 bad request' do
-      expect(response.status).to eq(400)
-    end
-
-    it 'responds with JSON content type' do
-      expect(response.headers['Content-Type']).to match('application/json')
-    end
-  end
-
   context 'Impartial data' do
     impartial_data = data.select { |key, _| key == :password }
 
