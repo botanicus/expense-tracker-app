@@ -4,7 +4,7 @@
 
 <ul ng-repeat="expense in expenses">
   <li>
-    {{expense.title}} {{expense.price}}
+    <strong>{{expense.title}}</strong> {{expense.price}}
     [<a href ng-click="editExpense(expense)">Edit</a> |
      <a href ng-click="deleteExpense(expense)">Delete</a>]
   </li>

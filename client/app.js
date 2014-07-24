@@ -108,7 +108,7 @@ app.controller('DashboardController', function ($scope, $modal, Expense, expense
       controller: 'ExpenseFormController',
       resolve: {
         expense: function () {
-          return expense || {}
+          return expense || new Expense();
         }
       }
     });
@@ -123,16 +123,19 @@ app.controller('DashboardController', function ($scope, $modal, Expense, expense
   };
 
   $scope.deleteExpense = function (expense) {
-    var expense = new Expense(expense);
-    expense.$delete({id: expense.id});
+    expense.$delete({id: expense.id}, function () {
+      var index = $scope.expenses.indexOf(expense);
+      if (index > -1) {
+        $scope.expenses.splice(index, 1);
+      }
+    });
   }
 });
 
-app.controller('ExpenseFormController', function (Expense, $scope, expense, $modalInstance) {
+app.controller('ExpenseFormController', function ($scope, expense, $modalInstance) {
   $scope.expense = expense;
 
-  $scope.addExpense = function (expense) {
-    var expense = new Expense(expense);
+  $scope.saveExpense = function (expense) {
     expense.$save(function () {
       $modalInstance.close(expense);
     });
