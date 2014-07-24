@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/botanicus/rspec-sane-http.git
-  revision: f18de0aca0f9f6964923be8b205b4c4a8644c612
+  revision: 43f5450b37575b5d8c092c83ed42721b6cf36783
   specs:
     rspec-sane-http (0.0.1)
       http (~> 0)
@@ -33,18 +33,16 @@ GEM
     http (0.6.1)
       http_parser.rb (~> 0.6.0)
     http_parser.rb (0.6.0)
-    jwt (0.1.11)
-      multi_json (>= 1.5)
-    libnotify (0.8.2)
+    jwt (1.0.0)
+    libnotify (0.8.3)
       ffi (>= 1.0.11)
-    listen (2.7.5)
+    listen (2.7.9)
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
-    lumberjack (1.0.5)
+    lumberjack (1.0.9)
     method_source (0.8.2)
     msgpack (0.5.8)
-    multi_json (1.10.1)
     nido (0.0.1)
     ohm (2.0.1)
       msgpack
@@ -55,15 +53,15 @@ GEM
     ohm-validations (0.0.1)
       ohm
       scrivener
-    pry (0.9.12.6)
-      coderay (~> 1.0)
-      method_source (~> 0.8)
+    pry (0.10.0)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
       slop (~> 3.4)
     rack (1.5.2)
     rack-protection (1.5.3)
       rack
     rb-fsevent (0.9.4)
-    rb-inotify (0.9.4)
+    rb-inotify (0.9.5)
       ffi (>= 0.5.0)
     redic (1.1.1)
       hiredis
@@ -71,20 +69,20 @@ GEM
       rspec-core (~> 3.0.0)
       rspec-expectations (~> 3.0.0)
       rspec-mocks (~> 3.0.0)
-    rspec-core (3.0.2)
+    rspec-core (3.0.3)
       rspec-support (~> 3.0.0)
-    rspec-expectations (3.0.2)
+    rspec-expectations (3.0.3)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.0.0)
-    rspec-mocks (3.0.2)
+    rspec-mocks (3.0.3)
       rspec-support (~> 3.0.0)
-    rspec-support (3.0.2)
+    rspec-support (3.0.3)
     scrivener (0.2.0)
     sinatra (1.4.5)
       rack (~> 1.4)
       rack-protection (~> 1.4)
       tilt (~> 1.3, >= 1.3.4)
-    slop (3.5.0)
+    slop (3.6.0)
     spoon (0.0.4)
       ffi
     thin (1.6.2)

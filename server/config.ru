@@ -1,4 +1,4 @@
-#!/usr/bin/env rackup -s thin -p 5000
+#!/usr/bin/env bundle exec rackup -s thin -p 5000
 
 # NOTE: This shebang works only on OS X, not
 # on Linux, if you wonder what the hell am I
@@ -151,7 +151,8 @@ get '/api/weekly-totals' do
       end
 
       totals.merge(week_number => {
-        sum: sum, avg: sum / expenses.count
+        sum: sum, avg: sum / expenses.count,
+        expenses: expenses
       })
     end
   end.to_json
@@ -202,7 +203,7 @@ end
 
 
 use ExpensesTracker::AuthenticationMiddleware do |token|
-  data = JWT.decode(token, JWT_SECRET)
+  data = JWT.decode(token, JWT_SECRET)[0]
   ExpensesTracker::User.with(:username, data['username'])
 end
 
