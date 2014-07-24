@@ -27,6 +27,10 @@ describe 'Sessions endpoint' do
         expect(response.headers['Content-Type']).to match('application/json')
       end
 
+      it 'does NOT use cookies' do
+        expect(response.headers['Set-Cookie']).to be_nil
+      end
+
       it 'returns the JWT token' do
         data = JSON.parse(response.body.readpartial)
         expect(data['token']).not_to be_nil

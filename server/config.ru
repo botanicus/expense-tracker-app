@@ -8,36 +8,18 @@ require 'sinatra'
 require 'json'
 require 'jwt'
 
-require_relative './lib/expenses-tracker/models'
-require_relative './lib/expenses-tracker/middlewares'
-
-class AuthenticationError < StandardError
-  def initialize
-    super('No Authorization header provided.')
-  end
-end
-
-class NotFoundError < StandardError
-  def initialize(what)
-    super("#{what} doesn't exist.")
-  end
-end
-
-# REST API.
-JWT_SECRET = 'bdd4bb20838e6156f54054399434783c'
+require_relative './lib/expenses-tracker'
 
 # Default to JSON.
 before do
   content_type :json
 end
 
-set :sessions, false
-
 helpers do
   def ensure_authentication(&block)
-    env['user'] || raise(AuthenticationError.new)
+    env['user'] || raise(ExpensesTracker::AuthenticationError.new)
     block.call(env['user'])
-  rescue AuthenticationError => error
+  rescue ExpensesTracker::AuthenticationError => error
     status 401; {message: error}.to_json
   end
 
@@ -45,7 +27,7 @@ helpers do
   # and hence avoid the need for blocks.
   def ensure_expense_authorship(id, user, &block)
     expense = ExpensesTracker::Expense[id]
-    expense || raise(NotFoundError.new("Expense ID=#{id}"))
+    expense || raise(ExpensesTracker::NotFoundError.new("Expense ID=#{id}"))
     if expense.user == user
       block.call(expense)
     else
@@ -53,7 +35,7 @@ helpers do
       # or the user is tampering with the app.
       status 403; 'This is not your expense!'
     end
-  rescue NotFoundError => error
+  rescue ExpensesTracker::NotFoundError => error
     status 404; error.message
   end
 end
@@ -62,6 +44,8 @@ end
 #
 # Normally you'd want to have some email confirmation,
 # but it's not part of the spec and I feel lazy :)
+#
+# Also it'd be nice to add protection against robots.
 post '/api/users' do
   begin
     user = ExpensesTracker::User.create!(env['json'])
@@ -85,7 +69,7 @@ post '/api/sessions' do
 
     # We might want to use iat and exp claims for expiration.
     # http://www.intridea.com/blog/2013/11/7/json-web-token-the-useful-little-standard-you-haven-t-heard-about
-    token = JWT.encode({username: user.username}, JWT_SECRET)
+    token = JWT.encode({username: user.username}, ExpensesTracker::JWT_SECRET)
 
     # With token-based authentication, there's
     # no such thing as sessions. Hence we're not
@@ -201,9 +185,9 @@ not_found do
   end
 end
 
-
+# The Rack app.
 use ExpensesTracker::AuthenticationMiddleware do |token|
-  data = JWT.decode(token, JWT_SECRET)[0]
+  data = JWT.decode(token, ExpensesTracker::JWT_SECRET)[0]
   ExpensesTracker::User.with(:username, data['username'])
 end
 
