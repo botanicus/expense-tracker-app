@@ -14,6 +14,8 @@ module.factory('resource', function ($resource) {
 
     resource.prototype.$save = function (callback) {
       if (this.id) {
+        // For some reason this is being submitted to the server.
+        delete this.$resolved;
         return this.$update({id: this.id}, callback);
       } else {
         return this.$create(callback);
