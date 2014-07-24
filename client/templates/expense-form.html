@@ -41,6 +41,9 @@
 
   <div class="modal-footer">
     <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-    <button type="submit" class="btn btn-success" ng-disabled="loginForm.$invalid">Create</button>
+    <button type="submit" class="btn btn-success" ng-disabled="loginForm.$invalid">
+      <span ng-show="expense.id">Update</span>
+      <span ng-hide="expense.id">Create</span>
+    </button>
   </div>
 </form>

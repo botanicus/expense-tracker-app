@@ -12,8 +12,12 @@ module.factory('resource', function ($resource) {
 
     var resource = $resource(url, params, methods);
 
-    resource.prototype.$save = function () {
-      return this.id ? this.$update() : this.$create();
+    resource.prototype.$save = function (callback) {
+      if (this.id) {
+        return this.$update({id: this.id}, callback);
+      } else {
+        return this.$create(callback);
+      };
     };
 
     return resource;

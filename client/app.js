@@ -114,7 +114,10 @@ app.controller('DashboardController', function ($scope, $modal, Expense, expense
     });
 
     modalInstance.result.then(function (expense) {
-      $scope.expenses.push(expense);
+      // Since Set won't be available until ES6 ...
+      if ($scope.expenses.indexOf(expense) == -1) {
+        $scope.expenses.push(expense);
+      };
     });
   };
 
