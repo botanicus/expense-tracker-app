@@ -1,4 +1,19 @@
 GIT
+  remote: git://github.com/botanicus/rack-jwt-token-auth.git
+  revision: 4af984647741062f0d289ed21093427f22d650ea
+  specs:
+    rack-jwt-token-auth (0.0.2)
+      jwt (~> 1)
+      rack (~> 1)
+
+GIT
+  remote: git://github.com/botanicus/rack-parse-posted-json.git
+  revision: 18e62fd05db1da82214d2886d94b6d39a824e2c8
+  specs:
+    rack-parse-posted-json (0.0.1)
+      rack (~> 1)
+
+GIT
   remote: git://github.com/botanicus/rspec-sane-http.git
   revision: 43f5450b37575b5d8c092c83ed42721b6cf36783
   specs:
@@ -106,6 +121,8 @@ DEPENDENCIES
   ohm-contrib
   ohm-validations
   pry
+  rack-jwt-token-auth!
+  rack-parse-posted-json!
   rspec
   rspec-sane-http!
   sinatra

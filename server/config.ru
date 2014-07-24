@@ -8,6 +8,10 @@ require 'sinatra'
 require 'json'
 require 'jwt'
 
+# I extracted those middleware from this project.
+require 'rack-jwt-token-auth'
+require 'rack-parse-posted-json'
+
 require_relative './lib/expenses-tracker'
 
 # Default to JSON.
@@ -174,11 +178,11 @@ not_found do
 end
 
 # The Rack app.
-use ExpensesTracker::AuthenticationMiddleware do |token|
+use Rack::JWTAuthMiddleware do |token|
   data = JWT.decode(token, ExpensesTracker::JWT_SECRET)[0]
   ExpensesTracker::User.with(:username, data['username'])
 end
 
-use ExpensesTracker::ParsePostedJSON
+use Rack::ParsePostedJSON
 
 run Sinatra::Application

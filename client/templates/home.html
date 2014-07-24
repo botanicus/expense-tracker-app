@@ -1,8 +1,7 @@
-<a href="/login" ng-hide="username">Login</a>
 
 <strong><span ng-show="username">Welcome {{username}}!</span></strong>
 
-<p>
+<p ng-show="username">
   Go to your <a href="/dashboard">dashboard</a>.
 </p>
 
@@ -10,4 +9,5 @@
   Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores veritatis cupiditate labore aperiam placeat provident veniam laudantium, adipisci atque, sapiente eos aspernatur alias. Quibusdam cumque, quos dolor dolore suscipit. Delectus!
 </p>
 
-<a class="btn btn-success" href="/sign-up">Sign up NOW!</a>
+<a class="btn btn-success" href="/login" ng-hide="username">Log in</a>
+<a class="btn btn-success" href="/sign-up">Sign up</a>

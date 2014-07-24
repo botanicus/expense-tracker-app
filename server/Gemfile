@@ -4,6 +4,8 @@ gem 'thin'
 gem 'sinatra'
 gem 'warden'
 gem 'jwt'
+gem 'rack-jwt-token-auth', github: 'botanicus/rack-jwt-token-auth'
+gem 'rack-parse-posted-json', github: 'botanicus/rack-parse-posted-json'
 
 gem 'ohm'
 gem 'ohm-validations'

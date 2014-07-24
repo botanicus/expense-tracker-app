@@ -15,4 +15,3 @@ module ExpensesTracker
 end
 
 require_relative 'expenses-tracker/models'
-require_relative 'expenses-tracker/middlewares'
