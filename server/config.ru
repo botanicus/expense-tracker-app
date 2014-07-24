@@ -8,7 +8,7 @@ require 'sinatra'
 require 'json'
 require 'jwt'
 
-# I extracted those middleware from this project.
+# I extracted those middlewares from this project.
 require 'rack-jwt-token-auth'
 require 'rack-parse-posted-json'
 
@@ -28,7 +28,7 @@ helpers do
 
   # Actually in Sinatra we can do throw :halt or something
   # and hence avoid the need for blocks.
-  def ensure_expense_authorship(id, user)
+  def ensure_expense_ownership(id, user)
     expense = ExpensesTracker::Expense[id]
     expense || raise(ExpensesTracker::NotFoundError.new("Expense ID=#{id}"))
     return expense if expense.user == user
@@ -97,20 +97,20 @@ end
 
 get '/api/expenses/:id' do
   user = ensure_authentication|
-  expense = ensure_expense_authorship(params[:id], user)
+  expense = ensure_expense_ownership(params[:id], user)
   expense.to_json
 end
 
 put '/api/expenses/:id' do
   user = ensure_authentication
-  expense = ensure_expense_authorship(params[:id], user)
+  expense = ensure_expense_ownership(params[:id], user)
   expense.update_attributes(env['json'])
   expense.save.to_json
 end
 
 delete '/api/expenses/:id' do
   user = ensure_authentication
-  expense = ensure_expense_authorship(params[:id], user)
+  expense = ensure_expense_ownership(params[:id], user)
   expense.delete
   user.expenses.delete(expense)
   status 204
