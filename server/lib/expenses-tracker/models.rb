@@ -44,8 +44,8 @@ module ExpensesTracker
 
     reference :user, 'ExpensesTracker::User'
 
-    def to_json
-      self.attributes.to_json
+    def to_json(*)
+      self.attributes.merge(id: self.id).to_json
     end
   end
 
