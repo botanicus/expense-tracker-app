@@ -16,27 +16,24 @@ before do
 end
 
 helpers do
-  def ensure_authentication(&block)
+  def ensure_authentication
     env['user'] || raise(ExpensesTracker::AuthenticationError.new)
-    block.call(env['user'])
   rescue ExpensesTracker::AuthenticationError => error
-    status 401; {message: error}.to_json
+    halt(401, {message: error}.to_json)
   end
 
   # Actually in Sinatra we can do throw :halt or something
   # and hence avoid the need for blocks.
-  def ensure_expense_authorship(id, user, &block)
+  def ensure_expense_authorship(id, user)
     expense = ExpensesTracker::Expense[id]
     expense || raise(ExpensesTracker::NotFoundError.new("Expense ID=#{id}"))
-    if expense.user == user
-      block.call(expense)
-    else
-      # This happens only if we have a bug in our code
-      # or the user is tampering with the app.
-      status 403; 'This is not your expense!'
-    end
+    return expense if expense.user == user
+
+    # This happens only if we have a bug in our code
+    # or the user is tampering with the app.
+    halt(403, 'This is not your expense!')
   rescue ExpensesTracker::NotFoundError => error
-    status 404; error.message
+    halt(404, error.message)
   end
 end
 
@@ -87,58 +84,50 @@ get '/api/expenses' do
 end
 
 post '/api/expenses' do
-  ensure_authentication do |user|
-    data = env['json'].merge(user: user)
-    expense = ExpensesTracker::Expense.create(data)
-    user.expenses.add(expense)
+  user = ensure_authentication
+  data = env['json'].merge(user: user)
+  expense = ExpensesTracker::Expense.create(data)
+  user.expenses.add(expense)
 
-    status 201; expense.to_json
-  end
+  status 201; expense.to_json
 end
 
 get '/api/expenses/:id' do
-  ensure_authentication do |user|
-    ensure_expense_authorship(params[:id], user) do |expense|
-      expense.to_json
-    end
-  end
+  user = ensure_authentication|
+  expense = ensure_expense_authorship(params[:id], user)
+  expense.to_json
 end
 
 put '/api/expenses/:id' do
-  ensure_authentication do |user|
-    ensure_expense_authorship(params[:id], user) do |expense|
-      expense.update_attributes(env['json'])
-      expense.to_json
-    end
-  end
+  user = ensure_authentication
+  expense = ensure_expense_authorship(params[:id], user)
+  expense.update_attributes(env['json'])
+  expense.to_json
 end
 
 delete '/api/expenses/:id' do
-  ensure_authentication do |user|
-    ensure_expense_authorship(params[:id], user) do |expense|
-      expense.delete
-      user.expenses.delete(expense)
-      status 204
-    end
-  end
+  user = ensure_authentication
+  expense = ensure_expense_authorship(params[:id], user)
+  expense.delete
+  user.expenses.delete(expense)
+  status 204
 end
 
 get '/api/weekly-totals' do
-  ensure_authentication do |user|
-    weeks = user.expenses.group_by do |expense|
-      (expense.created_at.yday / 7) + 1
+  user = ensure_authentication
+  weeks = user.expenses.group_by do |expense|
+    (expense.created_at.yday / 7) + 1
+  end
+
+  weeks.reduce(Hash.new) do |totals, (week_number, expenses)|
+    sum = expenses.reduce(0.0) do |sum, expense|
+      sum + expense.price
     end
 
-    weeks.reduce(Hash.new) do |totals, (week_number, expenses)|
-      sum = expenses.reduce(0.0) do |sum, expense|
-        sum + expense.price
-      end
-
-      totals.merge(week_number => {
-        sum: sum, avg: sum / expenses.count,
-        expenses: expenses
-      })
-    end
+    totals.merge(week_number => {
+      sum: sum, avg: sum / expenses.count,
+      expenses: expenses
+    })
   end.to_json
 end
 
