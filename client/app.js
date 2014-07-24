@@ -149,7 +149,7 @@ app.controller('DashboardController', function ($scope, $modal, Expense, expense
   };
 
   $scope.creationDate = function (expense) {
-    return new Date(expense.created_at * 1000);
+    return new Date(expense.createdAt * 1000);
   };
 });
 

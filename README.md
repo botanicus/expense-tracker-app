@@ -1,15 +1,42 @@
+# Usage
+
+## Working with The API Server
+
+```
+cd server
+bundle
+```
+
+### Running the API Server
+
+```
+./config.ru
+```
+
+### Running API Tests
+
+_For this you need to have the API server running._
+
+```
+bundle exec rspec
+```
+
+### Using The Web Interface
+
+Go to the [app](http://localhost:5000/).
+
 # Requirements
 
-- ✔ User must be able to create an account and log in.
-- ✔ User should be able to create an account in the system via an interface, probably a signup/register screen.
-- ✔ You need to be able to pass credentials to both the webpage and the API.
-- ✔ In any case you should be able to explain how a REST API works and demonstrate that by creating functional tests that use the REST Layer directly.
-- ✔ You need to login to the application to enter expenses.
-- ✔ When logged in, user can see, edit and delete expenses he entered.
-- ✔ When entered, each expense has: datetime, description, comment.
-- ✔ User can filter expenses.
-- ✔ User can print expenses per week with total amount and average day spending.
+- List expenses per week.
+- created_at -> createdAt
+- Extract middlewares into gems.
+- Tests.
 
 # Implementation Notes
 
 - Normally I'd put API on a separate subdomain. I think it's a good practise especially considering we always return the app.html (unless it's under /api/).
+
+# This is not a typical way people usually
+# write tests in Ruby. I'm a strong believer
+# in integration tests though. I'm very pleased
+# that you guys included it as a requirement!

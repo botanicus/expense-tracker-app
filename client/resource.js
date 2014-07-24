@@ -16,6 +16,7 @@ module.factory('resource', function ($resource) {
       if (this.id) {
         // For some reason this is being submitted to the server.
         delete this.$resolved;
+        delete this.createdAt;
         return this.$update({id: this.id}, callback);
       } else {
         return this.$create(callback);

@@ -78,9 +78,8 @@ post '/api/sessions' do
 end
 
 get '/api/expenses' do
-  ensure_authentication do |user|
-    user.expenses.to_a.to_json
-  end
+  user = ensure_authentication
+  user.expenses.to_a.to_json
 end
 
 post '/api/expenses' do
@@ -102,7 +101,7 @@ put '/api/expenses/:id' do
   user = ensure_authentication
   expense = ensure_expense_authorship(params[:id], user)
   expense.update_attributes(env['json'])
-  expense.to_json
+  expense.save.to_json
 end
 
 delete '/api/expenses/:id' do
