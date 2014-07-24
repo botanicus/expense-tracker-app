@@ -52,7 +52,14 @@ module ExpensesTracker
     reference :user, 'ExpensesTracker::User'
 
     def to_json(*)
-      self.attributes.merge(id: self.id).to_json
+      {
+        id: self.id, title: self.title, price: self.price,
+        comment: self.comment, createdAt: self.created_at
+      }.to_json
+    rescue Ohm::MissingID
+      {
+        title: self.title, price: self.price, comment: self.comment
+      }.to_json
     end
   end
 

@@ -10,7 +10,7 @@ describe 'Expenses endpoint' do
   token  = JWT.encode({username: 'botanicus'}, secret)
 
   hdrs = {Authorization: %Q(JWT token="#{token}")}
-  data = {title: '小笼包', price: 12.50}
+  data = {title: '小笼包', price: 12.50, comment: 'Very yummy!'}
 
   context 'Authorization header not provided' do
     shared_examples 'unauthorised request' do
@@ -64,7 +64,7 @@ describe 'Expenses endpoint' do
 
       it 'returns the newly created resource' do
         data = JSON.parse(response.body.readpartial)
-        expect(data.keys.sort).to eq(['price', 'title'])
+        expect(data.keys.sort).to eq(['comment', 'createdAt', 'id', 'price', 'title'])
         expect(data['title']).to eq('小笼包')
         expect(data['price']).to eq(12.50)
       end
