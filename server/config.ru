@@ -17,6 +17,12 @@ class AuthenticationError < StandardError
   end
 end
 
+class NotFoundError < StandardError
+  def initialize(what)
+    super("#{what} doesn't exist.")
+  end
+end
+
 # REST API.
 JWT_SECRET = 'bdd4bb20838e6156f54054399434783c'
 
@@ -35,8 +41,11 @@ helpers do
     status 401; {message: error}.to_json
   end
 
+  # Actually in Sinatra we can do throw :halt or something
+  # and hence avoid the need for blocks.
   def ensure_expense_authorship(id, user, &block)
-    expense = ExpensesTracker::Expense[params[:id]]
+    expense = ExpensesTracker::Expense[id]
+    expense || raise(NotFoundError.new("Expense ID=#{id}"))
     if expense.user == user
       block.call(expense)
     else
@@ -44,6 +53,8 @@ helpers do
       # or the user is tampering with the app.
       status 403; 'This is not your expense!'
     end
+  rescue NotFoundError => error
+    status 404; error.message
   end
 end
 
@@ -126,6 +137,24 @@ delete '/api/expenses/:id' do
       status 204
     end
   end
+end
+
+get '/api/weekly-totals' do
+  ensure_authentication do |user|
+    weeks = user.expenses.group_by do |expense|
+      (expense.created_at.yday / 7) + 1
+    end
+
+    weeks.reduce(Hash.new) do |totals, (week_number, expenses)|
+      sum = expenses.reduce(0.0) do |sum, expense|
+        sum + expense.price
+      end
+
+      totals.merge(week_number => {
+        sum: sum, avg: sum / expenses.count
+      })
+    end
+  end.to_json
 end
 
 # Error handlers.

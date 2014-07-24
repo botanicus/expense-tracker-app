@@ -42,7 +42,11 @@ module ExpensesTracker
     include Ohm::Timestamps
 
     attribute :title
-    attribute :price
+
+    # Price is float. Terrible idea, I know.
+    # In real-world app I'd do price * 100
+    # and save the price in pennies. #lazy
+    attribute :price, lambda { |value| value.to_f }
     attribute :comment
 
     reference :user, 'ExpensesTracker::User'

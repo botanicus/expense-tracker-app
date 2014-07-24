@@ -24,6 +24,16 @@ app.config(function ($locationProvider, $routeProvider) {
         return Expense.query();
       }
     }
+  }).
+  when('/totals', {
+    title: 'Expenses Tracker Totals',
+    controller: 'TotalsController',
+    templateUrl: '/templates/totals.html',
+    resolve: {
+      weeklyTotals: function ($http) {
+        return $http.get('/api/weekly-totals');
+      }
+    }
   });
 
   $routeProvider.otherwise({'redirectTo': '/'});
@@ -99,6 +109,10 @@ app.controller('LoginController', function ($scope) {
 app.controller('HomeController', function ($scope) {
 });
 
+app.controller('TotalsController', function ($scope, weeklyTotals) {
+  $scope.weeklyTotals = weeklyTotals.data;
+});
+
 app.controller('DashboardController', function ($scope, $modal, Expense, expenses) {
   $scope.expenses = expenses;
 
@@ -132,7 +146,11 @@ app.controller('DashboardController', function ($scope, $modal, Expense, expense
         $scope.expenses.splice(index, 1);
       }
     });
-  }
+  };
+
+  $scope.creationDate = function (expense) {
+    return new Date(expense.created_at * 1000);
+  };
 });
 
 app.controller('ExpenseFormController', function ($scope, expense, $modalInstance) {

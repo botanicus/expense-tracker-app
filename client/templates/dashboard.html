@@ -13,18 +13,28 @@
 
 <h2>Dashboard</h2>
 
-<a href ng-click="showExpenseForm()">Add an expense</a>
-
 <div ng-show="expenses.$resolved && expenses.length == 0">
   <em>You have no expenses yet. How about you add some?</em>
 </div>
 
-<ul ng-repeat="expense in expenses | filter:expensesFilter">
-  <li>
-    <strong>{{expense.title}}</strong>
-    {{expense.price}}
-    <em>{{expense.comment}}</em>
-    [<a href ng-click="editExpense(expense)">Edit</a> |
-     <a href ng-click="deleteExpense(expense)">Delete</a>]
-  </li>
-</ul>
+<table class="table table-striped">
+  <tr>
+    <th>Title</th>
+    <th>Price</th>
+    <th>Date</th>
+    <th>Comment</th>
+    <th>Actions</th>
+  </tr>
+  <tr ng-repeat="expense in expenses | filter:expensesFilter">
+    <td>{{expense.title}}</td>
+    <td>{{expense.price}}</td>
+    <td>{{creationDate(expense) | date:'MM/dd/yyyy h:mm a'}}</td>
+    <td><em>{{expense.comment}}</em></td>
+    <td>[<a href ng-click="editExpense(expense)">Edit</a> |
+     <a href ng-click="deleteExpense(expense)">Delete</a>]</td>
+  </tr>
+</table>
+
+<a href ng-click="showExpenseForm()">Add an expense</a>.
+<br />
+<a href="/totals">See your totals</a>.

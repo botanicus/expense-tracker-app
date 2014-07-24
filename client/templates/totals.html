@@ -1,0 +1,16 @@
+<h2>Your Totals</h2>
+
+<table class="table table-striped">
+  <tr>
+    <th>Week Number</th>
+    <th>Weekly Total</th>
+    <th>Daily Average</th>
+  </tr>
+  <tr ng-repeat="(weekNumber, data) in weeklyTotals">
+    <td>{{weekNumber}}</td>
+    <td>{{data.sum}}</td>
+    <td>{{data.avg}}</td>
+  </tr>
+</table>
+
+<a href="/dashboard">Back to dashboard</a>
