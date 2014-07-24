@@ -1,10 +1,5 @@
 # This is an INTEGRATION test. If the server
 # ain't running, the test ain't gonna work.
-#
-# This is not a typical way people usually
-# write tests in Ruby. I'm a strong believer
-# in integration tests though. I'm very pleased
-# that you guys included it as a requirement!
 
 require 'spec_helper'
 
