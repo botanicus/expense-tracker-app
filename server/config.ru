@@ -36,7 +36,7 @@ helpers do
   end
 
   def ensure_expense_authorship(id, user, &block)
-    expense = ExpensesTracker::Expense.get(params[:id])
+    expense = ExpensesTracker::Expense[params[:id]]
     if expense.user == user
       block.call(expense)
     else
@@ -93,7 +93,8 @@ end
 
 post '/api/expenses' do
   ensure_authentication do |user|
-    expense = ExpensesTracker::Expense.create(env['json'])
+    data = env['json'].merge(user: user)
+    expense = ExpensesTracker::Expense.create(data)
     user.expenses.add(expense)
 
     status 201; expense.to_json
@@ -120,7 +121,8 @@ end
 delete '/api/expenses/:id' do
   ensure_authentication do |user|
     ensure_expense_authorship(params[:id], user) do |expense|
-      expense.destroy
+      expense.delete
+      user.expenses.delete(expense)
       status 204
     end
   end
