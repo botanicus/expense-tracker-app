@@ -3,16 +3,15 @@ require 'jwt'
 
 module ExpensesTracker
   class AuthenticationMiddleware
-    def initialize(app, secret)
-      @app, @secret = app, secret
+    def initialize(app, &decoder)
+      @app, @decoder = app, decoder
     end
 
     def call(env)
       begin
         if env['HTTP_AUTHORIZATION']
           token = env['HTTP_AUTHORIZATION'].match(/JWT token="(.+)"/)[1]
-          data = JWT.decode(token, @secret)
-          env['user'] = ExpensesTracker::User.with(:username, data['username'])
+          env['user'] = @decoder.call(token)
         end
       rescue JWT::DecodeError => error
         body = {message: error.message}.to_json

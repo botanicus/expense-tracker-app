@@ -170,7 +170,11 @@ not_found do
 end
 
 
-use ExpensesTracker::AuthenticationMiddleware, JWT_SECRET
+use ExpensesTracker::AuthenticationMiddleware do |token|
+  data = JWT.decode(token, JWT_SECRET)
+  ExpensesTracker::User.with(:username, data['username'])
+end
+
 use ExpensesTracker::ParsePostedJSON
 
 run Sinatra::Application
