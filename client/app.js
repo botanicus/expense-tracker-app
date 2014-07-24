@@ -99,8 +99,48 @@ app.controller('LoginController', function ($scope) {
 app.controller('HomeController', function ($scope) {
 });
 
-app.controller('DashboardController', function ($scope, expenses) {
+app.controller('DashboardController', function ($scope, $modal, Expense, expenses) {
   $scope.expenses = expenses;
+
+  $scope.showExpenseForm = function (expense)  {
+    var modalInstance = $modal.open({
+      templateUrl: 'templates/expense-form.html',
+      controller: 'ExpenseFormController',
+      resolve: {
+        expense: function () {
+          return expense || {}
+        }
+      }
+    });
+
+    modalInstance.result.then(function (expense) {
+      $scope.expenses.push(expense);
+    });
+  };
+
+  $scope.editExpense = function (expense) {
+    $scope.showExpenseForm(expense);
+  };
+
+  $scope.deleteExpense = function (expense) {
+    var expense = new Expense(expense);
+    expense.$delete({id: expense.id});
+  }
+});
+
+app.controller('ExpenseFormController', function (Expense, $scope, expense, $modalInstance) {
+  $scope.expense = expense;
+
+  $scope.addExpense = function (expense) {
+    var expense = new Expense(expense);
+    expense.$save(function () {
+      $modalInstance.close(expense);
+    });
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
 });
 
 app.controller('SignUpController', function ($scope, $modal, $location, User) {

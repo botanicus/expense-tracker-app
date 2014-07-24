@@ -1,0 +1,46 @@
+<div class="modal-header">
+  <h3 class="modal-title">Add an Expense</h3>
+</div>
+
+<form name="expenseForm" class="form-horizontal" novalidate ng-submit="addExpense(expense)">
+  <div class="modal-body">
+    <div class="form-group">
+      <div class="large-12 columns">
+        <label class="col-md-3 control-label" for="title">Expense title</label>
+
+        <div class="col-md-8">
+          <input
+            type="text"
+            name="title"
+            class="form-control input-md"
+            id="title"
+            ng-model="expense.title"
+            placeholder="Title of your expense."
+            required />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="large-12 columns">
+        <label class="col-md-3 control-label" for="price">Expense price</label>
+
+        <div class="col-md-8">
+          <input
+            type="text"
+            name="price"
+            class="form-control input-md"
+            id="price"
+            ng-model="expense.price"
+            placeholder="Its price in your default currency."
+            required />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    <button type="submit" class="btn btn-success" ng-disabled="loginForm.$invalid">Create</button>
+  </div>
+</form>

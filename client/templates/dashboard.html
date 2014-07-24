@@ -1,5 +1,11 @@
 <h2>Dashboard</h2>
 
+<a href ng-click="showExpenseForm()">Add an expense</a>
+
 <ul ng-repeat="expense in expenses">
-  <li>{{expense.title}}</li>
+  <li>
+    {{expense.title}} {{expense.price}}
+    [<a href ng-click="editExpense(expense)">Edit</a> |
+     <a href ng-click="deleteExpense(expense)">Delete</a>]
+  </li>
 </ul>
