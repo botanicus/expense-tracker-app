@@ -6,7 +6,7 @@
   <div class="modal-body">
     <div class="form-group">
       <div class="large-12 columns">
-        <label class="col-md-3 control-label" for="title">Expense title</label>
+        <label class="col-md-3 control-label" for="title">Title</label>
 
         <div class="col-md-8">
           <input
@@ -23,7 +23,7 @@
 
     <div class="form-group">
       <div class="large-12 columns">
-        <label class="col-md-3 control-label" for="price">Expense price</label>
+        <label class="col-md-3 control-label" for="price">Price</label>
 
         <div class="col-md-8">
           <input
@@ -33,6 +33,23 @@
             id="price"
             ng-model="expense.price"
             placeholder="Its price in your default currency."
+            required />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="large-12 columns">
+        <label class="col-md-3 control-label" for="price">Comment</label>
+
+        <div class="col-md-8">
+          <input
+            type="text"
+            name="comment"
+            class="form-control input-md"
+            id="comment"
+            ng-model="expense.comment"
+            placeholder="Any comment?"
             required />
         </div>
       </div>

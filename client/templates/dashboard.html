@@ -21,7 +21,9 @@
 
 <ul ng-repeat="expense in expenses | filter:expensesFilter">
   <li>
-    <strong>{{expense.title}}</strong> {{expense.price}}
+    <strong>{{expense.title}}</strong>
+    {{expense.price}}
+    <em>{{expense.comment}}</em>
     [<a href ng-click="editExpense(expense)">Edit</a> |
      <a href ng-click="deleteExpense(expense)">Delete</a>]
   </li>

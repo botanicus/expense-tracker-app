@@ -1,4 +1,5 @@
 require 'ohm'
+require 'ohm/contrib'
 require 'ohm/validations'
 
 require 'bcrypt'
@@ -38,9 +39,11 @@ module ExpensesTracker
 
   class Expense < Ohm::Model
     include Ohm::Validations
+    include Ohm::Timestamps
 
     attribute :title
     attribute :price
+    attribute :comment
 
     reference :user, 'ExpensesTracker::User'
 
@@ -51,6 +54,7 @@ module ExpensesTracker
 
   class User < Ohm::Model
     include Ohm::Validations
+    include Ohm::Timestamps
 
     # Public attributes.
     attr_accessor :password, :passwordConfirmation

@@ -50,6 +50,8 @@ GEM
       msgpack
       nido
       redic
+    ohm-contrib (2.0.0)
+      ohm (~> 2.0.0)
     ohm-validations (0.0.1)
       ohm
       scrivener
@@ -103,6 +105,7 @@ DEPENDENCIES
   guard-rack
   jwt
   ohm
+  ohm-contrib
   ohm-validations
   pry
   rspec
