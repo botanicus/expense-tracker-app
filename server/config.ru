@@ -73,7 +73,7 @@ post '/api/sessions' do
     # really creating anything, hence HTTP 200.
     status 200; {token: token}.to_json
   rescue ExpensesTracker::UnauthenticatedUser => error
-    status 400; {message: error.message}.to_json
+    halt(400, {message: error.message}.to_json)
   end
 end
 
