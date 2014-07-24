@@ -69,7 +69,7 @@ end
 
 post '/api/sessions' do
   begin
-    user  = ExpensesTracker::User.ensure_authentication!(
+    user  = ExpensesTracker::User.authenticate!(
       *env['json'].values_at('username', 'password'))
 
     # We might want to use iat and exp claims for expiration.
