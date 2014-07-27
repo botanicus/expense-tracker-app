@@ -2,7 +2,7 @@
 # ain't running, the test ain't gonna work.
 
 require 'spec_helper'
-require 'expenses-tracker/models' # So we can create the damn user.
+require 'expenses-tracker/models' # So we can create the user.
 
 describe 'Sessions endpoint' do
   data = {
