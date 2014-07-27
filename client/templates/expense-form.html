@@ -49,8 +49,7 @@
             class="form-control input-md"
             id="comment"
             ng-model="expense.comment"
-            placeholder="Any comment?"
-            required />
+            placeholder="Any comment?" />
         </div>
       </div>
     </div>
@@ -58,7 +57,7 @@
 
   <div class="modal-footer">
     <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-    <button type="submit" class="btn btn-success" ng-disabled="loginForm.$invalid">
+    <button type="submit" class="btn btn-success" ng-disabled="expenseForm.$invalid">
       <span ng-show="expense.id">Update</span>
       <span ng-hide="expense.id">Create</span>
     </button>
