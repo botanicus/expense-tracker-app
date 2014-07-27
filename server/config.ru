@@ -128,8 +128,7 @@ get '/api/weekly-totals' do
     end
 
     totals.merge(week_number => {
-      sum: sum, avg: sum / 7,
-      expenses: expenses
+      sum: sum, avg: sum / 7, expenses: expenses
     })
   end.to_json
 end

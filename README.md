@@ -28,9 +28,6 @@ Go to the [app](http://localhost:5000/).
 # Requirements
 
 - List expenses per week.
-- created_at -> createdAt
-- Extract middlewares into gems.
-- Tests.
 
 # Implementation Notes
 
