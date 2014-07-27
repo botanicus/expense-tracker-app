@@ -22,7 +22,7 @@ shared_examples 'unauthorised request' do
 
   it 'returns JSON body with an explanation' do
     data = JSON.parse(response.body.readpartial)
-    expect(data['message']).to eq('No Authorization header provided.')
+    expect(data['message']).to eq('User either does not exist or no authorization header was provided.')
   end
 end
 

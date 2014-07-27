@@ -9,15 +9,15 @@ describe 'Expenses endpoint' do
   secret = 'bdd4bb20838e6156f54054399434783c'
   token  = JWT.encode({username: 'botanicus'}, secret)
 
-  hdrs = {Authorization: %Q(JWT token="#{token}")}
-  data = {title: '小笼包', price: 12.50, comment: 'Very yummy!'}
+  headers = {Authorization: %Q(JWT token="#{token}")}
+  rq_data = {title: '小笼包', price: 12.50, comment: 'Very yummy!'}
 
   context 'Authorization header not provided' do
     describe 'GET /api/expenses' do
       it_behaves_like 'unauthorised request'
     end
 
-    describe 'POST /api/expenses', data: data.to_json do
+    describe 'POST /api/expenses', data: rq_data.to_json do
       it_behaves_like 'unauthorised request'
     end
 
@@ -29,20 +29,20 @@ describe 'Expenses endpoint' do
       it_behaves_like 'unauthorised request'
     end
 
-    describe 'PUT /api/expenses/1', data: data.to_json do
+    describe 'PUT /api/expenses/1', data: rq_data.to_json do
       it_behaves_like 'unauthorised request'
     end
   end
 
   context 'Authorization header provided' do
-    describe 'POST /api/expenses', data: data.to_json, headers: hdrs do
-      before(:each) do
-        ExpensesTracker::User.create!(
-          username: 'botanicus',
-          password: '123456789',
-          passwordConfirmation: '123456789')
-      end
+    before(:each) do
+      @user = ExpensesTracker::User.create!(
+        username: 'botanicus',
+        password: '123456789',
+        passwordConfirmation: '123456789')
+    end
 
+    describe 'POST /api/expenses', data: rq_data.to_json, headers: headers do
       it 'returns HTTP 201 created' do
         expect(response.status).to eq(201)
       end
@@ -56,6 +56,56 @@ describe 'Expenses endpoint' do
         expect(data.keys.sort).to eq(['comment', 'createdAt', 'id', 'price', 'title'])
         expect(data['title']).to eq('小笼包')
         expect(data['price']).to eq(12.50)
+      end
+    end
+
+    describe 'GET /api/expenses', headers: headers do
+      it 'returns an empty collection if there are none' do
+        data = JSON.parse(response.body.readpartial)
+        expect(data).to be_empty
+      end
+
+      it 'returns collection of expenses if there are some' do
+        POST('/api/expenses', headers, rq_data)
+
+        data = JSON.parse(response.body.readpartial)
+        expect(data.length).to eq(1)
+        expect(data[0].keys.sort).to eq(['comment', 'createdAt', 'id', 'price', 'title'])
+      end
+    end
+
+    describe 'GET /api/expenses/1', headers: headers do
+      it 'returns given expense' do
+        POST('/api/expenses', headers, rq_data)
+
+        data = JSON.parse(response.body.readpartial)
+        expect(data.keys.sort).to eq(['comment', 'createdAt', 'id', 'price', 'title'])
+      end
+    end
+
+    describe 'PUT /api/expenses/1', headers: headers, data: rq_data.to_json do
+      it 'updates given expense' do
+        POST('/api/expenses', headers, rq_data.merge(title: 'Xiao long bao'))
+
+        response # Fire the request.
+
+        data = GET('/api/expenses/1', headers)
+        expect(data['title']).to eq('小笼包')
+      end
+
+      it 'returns the updated data' do
+        POST('/api/expenses', headers, rq_data)
+
+        data = JSON.parse(response.body.readpartial)
+        expect(data['title']).to eq('小笼包')
+      end
+    end
+
+    describe 'DELETE /api/expenses/1', headers: headers do
+      it 'deletes given expense' do
+        POST('/api/expenses', headers, rq_data)
+
+        expect(response.code).to eq(204)
       end
     end
   end

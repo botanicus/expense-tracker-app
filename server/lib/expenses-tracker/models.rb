@@ -37,7 +37,26 @@ module ExpensesTracker
     end
   end
 
-  class Expense < Ohm::Model
+  class Model < Ohm::Model
+    def initialize(*args)
+      super(*args)
+    rescue Exception => error
+      # C'mon guys, how about providing a special error class?
+      raise UndefinedAttribute.new(error)
+    end
+
+    def self.create!(*args)
+      self.new(*args).tap(&:save!)
+    end
+
+    def save!
+      unless self.save
+        raise InvalidObject.new(self.errors)
+      end
+    end
+  end
+
+  class Expense < Model
     include Ohm::Validations
     include Ohm::Timestamps
 
@@ -63,7 +82,7 @@ module ExpensesTracker
     end
   end
 
-  class User < Ohm::Model
+  class User < Model
     include Ohm::Validations
     include Ohm::Timestamps
 
@@ -107,24 +126,6 @@ module ExpensesTracker
     def save
       self.encrypt_password
       super if self.valid?
-    end
-
-    # TODO: Extract this when I'll have more model classes.
-    def initialize(*args)
-      super(*args)
-    rescue Exception => error
-      # C'mon guys, how about providing a special error class?
-      raise UndefinedAttribute.new(error)
-    end
-
-    def self.create!(*args)
-      self.new(*args).tap(&:save!)
-    end
-
-    def save!
-      unless self.save
-        raise InvalidObject.new(self.errors)
-      end
     end
 
     def encrypt_password

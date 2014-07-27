@@ -35,9 +35,9 @@ helpers do
 
     # This happens only if we have a bug in our code
     # or the user is tampering with the app.
-    halt(403, 'This is not your expense!')
+    halt(403, {message: 'This is not your expense!'}.to_json)
   rescue ExpensesTracker::NotFoundError => error
-    halt(404, error.message)
+    halt(404, error.to_json)
   end
 end
 
@@ -96,7 +96,7 @@ post '/api/expenses' do
 end
 
 get '/api/expenses/:id' do
-  user = ensure_authentication|
+  user = ensure_authentication
   expense = ensure_expense_ownership(params[:id], user)
   expense.to_json
 end

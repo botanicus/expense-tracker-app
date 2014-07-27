@@ -1,7 +1,8 @@
 module ExpensesTracker
   class AuthenticationError < StandardError
+    MESSAGE = 'User either does not exist or no authorization header was provided.'
     def initialize
-      super('No Authorization header provided.')
+      super(self.class::MESSAGE)
     end
   end
 
