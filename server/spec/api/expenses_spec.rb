@@ -42,20 +42,39 @@ describe 'Expenses endpoint' do
         passwordConfirmation: '123456789')
     end
 
-    describe 'POST /api/expenses', data: rq_data.to_json, headers: headers do
-      it 'returns HTTP 201 created' do
-        expect(response.status).to eq(201)
-      end
+    context 'incomplete data' do
+      describe 'POST /api/expenses', data: {comment: ''}.to_json, headers: headers do
+        it 'returns HTTP 201 created' do
+          expect(response.status).to eq(400)
+        end
 
-      it 'responds with JSON content type' do
-        expect(response.headers['Content-Type']).to match('application/json')
-      end
+        it 'responds with JSON content type' do
+          expect(response.headers['Content-Type']).to match('application/json')
+        end
 
-      it 'returns the newly created resource' do
-        data = JSON.parse(response.body.readpartial)
-        expect(data.keys.sort).to eq(['comment', 'createdAt', 'id', 'price', 'title'])
-        expect(data['title']).to eq('小笼包')
-        expect(data['price']).to eq(12.50)
+        it 'returns validation errors' do
+          data = JSON.parse(response.body.readpartial)
+          expect(data['message']).to eq('INVALID')
+        end
+      end
+    end
+
+    context 'valid data' do
+      describe 'POST /api/expenses', data: rq_data.to_json, headers: headers do
+        it 'returns HTTP 201 created' do
+          expect(response.status).to eq(201)
+        end
+
+        it 'responds with JSON content type' do
+          expect(response.headers['Content-Type']).to match('application/json')
+        end
+
+        it 'returns the newly created resource' do
+          data = JSON.parse(response.body.readpartial)
+          expect(data.keys.sort).to eq(['comment', 'createdAt', 'id', 'price', 'title'])
+          expect(data['title']).to eq('小笼包')
+          expect(data['price']).to eq(12.50)
+        end
       end
     end
 

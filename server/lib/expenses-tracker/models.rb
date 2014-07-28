@@ -80,6 +80,11 @@ module ExpensesTracker
         title: self.title, price: self.price, comment: self.comment
       }.to_json
     end
+
+    def validate
+      assert_present(:title)
+      assert_present(:price)
+    end
   end
 
   class User < Model
