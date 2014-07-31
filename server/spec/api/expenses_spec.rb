@@ -44,7 +44,7 @@ describe 'Expenses endpoint' do
 
     context 'incomplete data' do
       describe 'POST /api/expenses', data: {comment: ''}.to_json, headers: headers do
-        it 'returns HTTP 201 created' do
+        it 'returns HTTP 400 bad request' do
           expect(response.status).to eq(400)
         end
 
